@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PIPI Nails</title>
+
+<style>
+body {
+  font-family: 'Arial';
+  background: linear-gradient(to bottom, #fff0f5, #ffe4ec);
+  margin: 0;
+}
+
+h1 {
+  text-align: center;
+  color: #e75480;
+  margin-top: 15px;
+}
+
+.section {
+  padding: 10px;
+}
+
+.card {
+  background: white;
+  border-radius: 15px;
+  padding: 12px;
+  margin: 8px 10px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+button {
+  background: #ff69b4;
+  border: none;
+  color: white;
+  padding: 5px 10px;
+  border-radius: 8px;
+}
+
+.category {
+  font-weight: bold;
+  color: #d63384;
+  margin-left: 15px;
+}
+
+.total {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  background: white;
+  padding: 15px;
+  box-shadow: 0 -3px 10px rgba(0,0,0,0.1);
+  text-align: center;
+}
+
+.whatsapp {
+  width: 90%;
+  margin-top: 10px;
+  padding: 12px;
+  background: #25D366;
+  color: white;
+  border-radius: 10px;
+  font-size: 16px;
+}
+</style>
+</head>
+
+<body>
+
+<h1>PIPI Nails 💖</h1>
+
+<div id="app"></div>
+
+<div class="total">
+  Total: $<span id="total">0</span><br>
+  <button class="whatsapp" onclick="sendWhatsApp()">Reservar por WhatsApp</button>
+</div>
+
+<script>
+
+const data = [
+  {cat:"💅 UÑAS", items:[
+    ["Semipermanente manos",13000],
+    ["Semipermanente pies",15000],
+    ["Belleza de pies",10000],
+    ["Capping",15000],
+    ["Baño de acrílico",17000],
+    ["Sistema híbrido",20000],
+    ["Soft gel",18000]
+  ]},
+
+  {cat:"👁️ PESTAÑAS", items:[
+    ["Lifting",17000],
+    ["Pelo por pelo clásica",20000],
+    ["Pelo por pelo volumen",23000]
+  ]},
+
+  {cat:"✨ CEJAS", items:[
+    ["Laminado",15000],
+    ["Perfilado",10000]
+  ]},
+
+  {cat:"🧴 FACIALES", items:[
+    ["Drenaje rostro",15000],
+    ["Drenaje cuerpo",20000],
+    ["Limpieza profunda",20000],
+    ["Alta frecuencia + electroporación",35000],
+    ["Tratamientos faciales",30000],
+    ["Peeling químico",25000]
+  ]},
+
+  {cat:"💎 EXTRAS (10 uñas)", items:[
+    ["Francesitas",3000],
+    ["Efectos nail art",5000],
+    ["Efecto espejo/perla",4000],
+    ["Ojo de gato",5000],
+    ["Efecto 3D",5000],
+    ["Blooming",3000]
+  ]},
+
+  {cat:"💎 EXTRAS (por uña)", items:[
+    ["Francesita",300],
+    ["Efectos",400],
+    ["Strass",200],
+    ["Soft gel extra",1500]
+  ]},
+
+  {cat:"🔄 RETIROS", items:[
+    ["Retiro semi",2000],
+    ["Retiro capping/soft gel",4000],
+    ["Retiro acrílico",3000],
+    ["Retiro acrílicas",5000]
+  ]}
+];
+
+let quantities = [];
+
+function render(){
+  let html = "";
+  let index = 0;
+
+  data.forEach(section => {
+    html += `<div class="category">${section.cat}</div>`;
+
+    section.items.forEach(item => {
+      html += `
+        <div class="card">
+          <div class="row">
+            <span>${item[0]} - $${item[1]}</span>
+            <div>
+              <button onclick="change(${index},-1)">-</button>
+              ${quantities[index] || 0}
+              <button onclick="change(${index},1)">+</button>
+            </div>
+          </div>
+        </div>
+      `;
+      index++;
+    });
+  });
+
+  document.getElementById("app").innerHTML = html;
+}
+
+function change(i,val){
+  quantities[i] = (quantities[i] || 0) + val;
+  if(quantities[i] < 0) quantities[i] = 0;
+  updateTotal();
+  render();
+}
+
+function updateTotal(){
+  let total = 0;
+  let index = 0;
+
+  data.forEach(section => {
+    section.items.forEach(item => {
+      total += item[1] * (quantities[index] || 0);
+      index++;
+    });
+  });
+
+  document.getElementById("total").innerText = total;
+}
+
+function sendWhatsApp(){
+  let msg = "Hola! Quiero reservar turno en PIPI Nails 💖\n\n";
+  let index = 0;
+
+  data.forEach(section => {
+    let sectionText = "";
+    section.items.forEach(item => {
+      if((quantities[index] || 0) > 0){
+        sectionText += `${item[0]} x${quantities[index]}\n`;
+      }
+      index++;
+    });
+
+    if(sectionText){
+      msg += section.cat + ":\n" + sectionText + "\n";
+    }
+  });
+
+  msg += "Total: $" + document.getElementById("total").innerText;
+
+  window.open("https://wa.me/5493816977758?text=" + encodeURIComponent(msg));
+}
+
+render();
+
+</script>
+
+</body>
+</html>
